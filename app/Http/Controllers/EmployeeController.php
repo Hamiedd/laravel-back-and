@@ -21,8 +21,8 @@ class EmployeeController extends Controller
 
 
 
-        $datalogin= Login::all();
-        dd($datalogin);
+        $datalogin= User::all();
+       
 
 
 
