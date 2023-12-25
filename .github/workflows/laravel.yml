@@ -1,0 +1,44 @@
+name: Laravel Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.0'
+
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Install Dependencies
+      run: composer install --no-scripts --no-progress --prefer-dist
+
+    - name: Generate Key
+      run: php artisan key:generate
+
+    - name: Set up MySQL and Migrate
+      env:
+        DB_CONNECTION: mysql
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_DATABASE: ${{ secrets.DB_DATABASE }}
+        DB_USERNAME: ${{ secrets.DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      run: |
+        php artisan migrate --force
+        php artisan config:cache
+
+    - name: Execute Tests (PHPUnit)
+      run: vendor/bin/phpunit
