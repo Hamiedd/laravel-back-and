@@ -25,4 +25,4 @@ if ($uri !== '/' && file_exists($publicPath . $uri)) {
 
 
 
-require_once $publicPath_ . 'index.php';
+require_once $publicPath . '/index.php';
